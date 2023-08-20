@@ -23,6 +23,15 @@ Modes:
 - Governance - Authorization to delete objects is granted via the `s3:BypassGovernanceRetention` actions.
 - Compliance - No one is allowed to delete the object until the lock has expired. Not even the Root.
 
+
+
+```sh
+# Modify the value for "--object-lock-retain-until-date"
+aws s3api put-object --bucket bucketdataintegritysandbox789 --key "important.txt" --body "artifacts/important.txt" \
+  --object-lock-mode "GOVERNANCE" \
+  --object-lock-retain-until-date "2023-08-20T18:45:00-03:00"
+```
+
 ## S3 Glacier Vault Lock
 
 - Operates with a Resource Policy.
