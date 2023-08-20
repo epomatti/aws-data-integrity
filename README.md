@@ -1,8 +1,8 @@
-# Data integrity on AWS
+# AWS Data Integrity
 
-Data integrity features provided by AWS, based on DLP course.
+Set of Data Integrity features provided by AWS services as a requirement for AWS Security.
 
-The following 
+The following services provide data integrity features:
 
 | Service | |
 
@@ -24,13 +24,39 @@ Modes:
 - Compliance - No one is allowed to delete the object until the lock has expired. Not even the Root.
 
 
+### Retention period type `GOVERNANCE`
+
+While the no retention period is defined, it is possible to apply change the objects.
+
+Upload a new version `v2` of the file:
 
 ```sh
-# Modify the value for "--object-lock-retain-until-date"
-aws s3api put-object --bucket bucketdataintegritysandbox789 --key "important.txt" --body "artifacts/important.txt" \
-  --object-lock-mode "GOVERNANCE" \
-  --object-lock-retain-until-date "2023-08-20T18:45:00-03:00"
+aws s3api put-object --bucket bucketdataintegritysandbox789 --key "important.txt" --body "artifacts/important-v2.txt"
 ```
+
+Now, apply an object retention period for the object:
+
+ℹ️ Modify the value for `RetainUntilDate` accordingly.
+
+```sh
+aws s3api put-object-retention \
+    --bucket bucketdataintegritysandbox789 \
+    --key "important.txt" \
+    --retention '{ "Mode": "GOVERNANCE", "RetainUntilDate": "2023-08-20T20:40:00-03:00" }'
+```
+
+With a test user that does not have `s3:BypassGovernanceRetention`, try again to create a new object `v3` version:
+
+```sh
+aws s3api put-object --bucket bucketdataintegritysandbox789 --key "important.txt" --body "artifacts/important-v3.txt"
+```
+
+You should expect a failure at this point. Only users with `s3:BypassGovernanceRetention` can perform this operation or delete the object.
+
+
+### Retention period type `COMPLIANCE`
+
+
 
 ## S3 Glacier Vault Lock
 

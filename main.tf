@@ -32,6 +32,6 @@ resource "aws_s3_bucket" "main" {
 resource "aws_s3_object" "important" {
   bucket = aws_s3_bucket.main.id
   key    = "important.txt"
-  source = "./artifacts/important.txt"
-  etag   = filemd5("./artifacts/important.txt")
+  source = "./artifacts/important-v1.txt"
+  etag   = filemd5("./artifacts/important-v1.txt")
 }
