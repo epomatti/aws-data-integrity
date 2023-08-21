@@ -1,3 +1,3 @@
-output "s3" {
-  value = aws_s3_bucket.main.bucket
+output "s3_bucket" {
+  value = module.s3_bucket.bucket
 }
