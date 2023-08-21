@@ -14,19 +14,19 @@ The following services provide data integrity features:
 
 ## S3 Object Lock
 
-- Prevents objects from being **deleted** from a configurable amount of time.
+- Set objects as **immutable** during a retention period.
 - Only for NEW buckets, while they are being created. Cannot apply this for existing buckets.
 - Automatically enables versioning.
-- New objects inherit bucket settings, but once created, it is possible to apply object-by-object settings.
+- New objects inherit bucket settings, if defined. However, possible to apply object-by-object settings.
 
 Modes:
-- Governance - Authorization to delete objects is granted via the `s3:BypassGovernanceRetention` actions.
-- Compliance - No one is allowed to delete the object until the lock has expired. Not even the Root.
+- Governance - Authorization to change objects is granted via the `s3:BypassGovernanceRetention` actions.
+- Compliance - No one is allowed to change the object until the lock has expired. Not even the Root.
 
 
 ### Retention period type `GOVERNANCE`
 
-While the no retention period is defined, it is possible to apply change the objects.
+While no retention period is defined, it is possible to apply changes to the objects.
 
 Upload a new version `v2` of the file:
 
@@ -56,7 +56,36 @@ You should expect a failure at this point. Only users with `s3:BypassGovernanceR
 
 ### Retention period type `COMPLIANCE`
 
+This section will use the same object key `important.txt`, so first it is necessary to remove the retention:
 
+> 💡 Using `--bypass-governance-retention` toggle to allow this operation
+
+```
+aws s3api put-object-retention \
+    --bucket bucketdataintegritysandbox789 \
+    --key "important.txt" \
+    --retention '{ }' \
+    --bypass-governance-retention
+```
+
+> ℹ️ Setting the `RetainUntilDate` value must be done with attention. It's not possible revert this action until the retention period is done.
+
+```
+aws s3api put-object-retention \
+    --bucket bucketdataintegritysandbox789 \
+    --key "important.txt" \
+    --retention '{ "Mode": "COMPLIANCE", "RetainUntilDate": "2023-08-20T20:40:00-03:00" }'
+```
+
+It is **NOT** possible to disable `COMPLIANCE` retention periods. This should return `Access Denied`:
+
+```
+aws s3api put-object-retention \
+    --bucket bucketdataintegritysandbox789 \
+    --key "important.txt" \
+    --retention '{ }' \
+    --bypass-governance-retention
+```
 
 ## S3 Glacier Vault Lock
 
