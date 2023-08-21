@@ -4,13 +4,19 @@ Set of Data Integrity features provided by AWS services as a requirement for AWS
 
 The following services provide data integrity features:
 
-- S3 Object Lock
-- S3 Glacier Vault Lock
-- AWS Backup Vault Lock
+- [S3 Object Lock](#s3-object-lock)
+- [S3 Glacier Vault Lock](#s3-glacier-vault-lock)
+- [AWS Backup Vault Lock](#aws-backup-vault-lock)
 
 Additionally, Legal Hold is available for S3 and Backup Vault.
 
-### Setup
+### Legal Holds
+
+Can be applied to:
+- S3 Object lock legal hold (requires S3 object lock to be enabled). Object-level setting.
+- AWS Backup legal hold (does not require vault lock). Prevents backups from being deleted for duration of lock. All or selected backups.
+
+## Pre-requisite: Infrastructure Setup
 
 To create the baseline infrastructure, execute:
 
@@ -162,11 +168,7 @@ Retention modes:
 - Governance - Users may be authorized to delete objects or vault
 - Compliance - Enables with start date (at least 3 days in the future). During this grace period the lock may be modified or removed. After this, the vault is immutable, and no one can delete backups or delete/manage the vault, forever. Only terminating the AWS account.
 
-## Legal Holds
 
-Can be applied to:
-- S3 Object lock legal hold (requires S3 object lock to be enabled). Object-level setting.
-- AWS Backup legal hold (does not require vault lock). Prevents backups from being deleted for duration of lock. All or selected backups.
 
 
 

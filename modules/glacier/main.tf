@@ -7,7 +7,7 @@ locals {
 }
 
 resource "aws_glacier_vault" "main" {
-  name = "dataintegritysandboxglacier789"
+  name = "dataintegritysandboxglacier789"  
 }
 
 resource "aws_glacier_vault_lock" "example" {

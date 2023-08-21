@@ -14,6 +14,11 @@ variable "toggle_create_glacier" {
   default = false
 }
 
+variable "toggle_create_backup" {
+  type = bool
+  default = false
+}
+
 ### Glacier ###
 variable "glacier_lockpolicy_ArchiveAgeInDays" {
   type = number

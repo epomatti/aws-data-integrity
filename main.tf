@@ -15,6 +15,7 @@ provider "aws" {
 locals {
   count_s3      = var.toggle_create_s3 ? 1 : 0
   count_glacier = var.toggle_create_glacier ? 1 : 0
+  count_backup  = var.toggle_create_backup ? 1 : 0
 }
 
 ### Modules
@@ -29,4 +30,9 @@ module "glacier" {
   count  = local.count_glacier
 
   lockpolicy_ArchiveAgeInDays = var.glacier_lockpolicy_ArchiveAgeInDays
+}
+
+module "backup" {
+  source = "./modules/backup"
+  count  = local.count_backup
 }
