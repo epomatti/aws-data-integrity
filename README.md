@@ -170,20 +170,44 @@ Check the [documentation][1] for Glacier vault lock policies.
 
 ## AWS Backup Vault Lock
 
-- Prevents backups in the vault from being deleted until lock expiration.
+AWS Backup Vault Locks will prevents backups in the vault from being deleted until lock expiration.
 
-ℹ️ There is a difference between these retention periods:
-- Backup Job retention period - Defines how long a backup job should be retained.
-- Backup Vault Lock retention period - Retention period backup job
+There is a difference between these retention periods:
+
+- **Backup Job retention period** - Defines how long a backup job should be retained.
+- **Backup Vault Lock retention period** - Retention period backup job.
 
 Enabling the vault lock will also protect the Backup Vault from being deleted indefinitely, unlike Glacier.
 
-Retention modes:
-- Governance - Users may be authorized to delete objects or vault
-- Compliance - Enables with start date (at least 3 days in the future). During this grace period the lock may be modified or removed. After this, the vault is immutable, and no one can delete backups or delete/manage the vault, forever. Only terminating the AWS account.
+Same as with S3 locks, there are retention modes:
+
+- **Governance** - Users may be authorized to delete objects or vault with special grants.
+- **Compliance** - Enables with start date (at least 3 days in the future). During this grace period the lock may be modified or removed. After this, the vault is immutable, and no one can delete backups or delete/manage the vault, forever. Only terminating the AWS account.
+
+### Vault Lock hands-on
+
+Terraform will create a DynamoDB and a backup for it, with a vault lock already running in grace time:
+
+<img src=".assets/backup-grace-time.png" />
+
+Start an on-demand backup job for the DynamoDB table:
+
+```sh
+aws backup start-backup-job \
+    --backup-vault-name "DynamoDBVault" \
+    --resource-arn "dynamo-arn" \
+    --iam-role-arn "role-arn"
+```
+
+While locks are active, it is not possible to delete recovery points:
+
+<img src=".assets/recoverypoint-delete.png" />
 
 
+### Legal Hold
 
+Additionally, it is possible to apply a Legal Hold:
 
+<img src=".assets/backup-legalhold.png" />
 
 [1]: https://docs.aws.amazon.com/amazonglacier/latest/dev/vault-lock-policy.html

@@ -16,17 +16,17 @@ resource "aws_dynamodb_table" "customers" {
   }
 }
 
-resource "aws_backup_vault" "example" {
+resource "aws_backup_vault" "main" {
   name          = "DynamoDBVault"
   force_destroy = true
 }
 
-resource "aws_backup_plan" "example" {
-  name = "tf_example_backup_plan"
+resource "aws_backup_plan" "dynamodb" {
+  name = "dynamodb-backup-plan"
 
   rule {
-    rule_name         = "tf_example_backup_rule"
-    target_vault_name = aws_backup_vault.example.name
+    rule_name         = "rule1"
+    target_vault_name = aws_backup_vault.main.name
     schedule          = "cron(0 12 * * ? *)"
 
     lifecycle {
@@ -47,29 +47,29 @@ data "aws_iam_policy_document" "assume_role" {
     actions = ["sts:AssumeRole"]
   }
 }
-resource "aws_iam_role" "example" {
-  name               = "example"
+resource "aws_iam_role" "backup" {
+  name               = "backup-service-role"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
 
-resource "aws_iam_role_policy_attachment" "example" {
+resource "aws_iam_role_policy_attachment" "backup" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup"
-  role       = aws_iam_role.example.name
+  role       = aws_iam_role.backup.name
 }
 
-resource "aws_backup_selection" "example" {
-  iam_role_arn = aws_iam_role.example.arn
-  name         = "tf_example_backup_selection"
-  plan_id      = aws_backup_plan.example.id
+resource "aws_backup_selection" "dynamodb" {
+  iam_role_arn = aws_iam_role.backup.arn
+  name         = "dynamodb-resource-selection"
+  plan_id      = aws_backup_plan.dynamodb.id
 
   resources = [
     aws_dynamodb_table.customers.arn
   ]
 }
 
-# resource "aws_backup_vault_lock_configuration" "test" {
-#   backup_vault_name   = aws_backup_vault.example.name
-#   changeable_for_days = 3
-#   max_retention_days  = 7
-#   min_retention_days  = 1
-# }
+resource "aws_backup_vault_lock_configuration" "temp" {
+  backup_vault_name   = aws_backup_vault.main.name
+  changeable_for_days = 3
+  max_retention_days  = 7
+  min_retention_days  = 1
+}
