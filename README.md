@@ -18,7 +18,21 @@ Can be applied to:
 
 ## Pre-requisite: Infrastructure Setup
 
-To create the baseline infrastructure, execute:
+Copy the sample variables file:
+
+```sh
+cp config/sample.tfvars .auto.tfvars
+```
+
+Toggle which module to create:
+
+```terraform
+toggle_create_s3      = true
+toggle_create_glacier = false
+toggle_create_backup  = false
+```
+
+To create the baseline infrastructure, apply the configuration:
 
 ```sh
 terraform init
