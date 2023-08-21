@@ -66,3 +66,10 @@ resource "aws_backup_selection" "example" {
     aws_dynamodb_table.customers.arn
   ]
 }
+
+# resource "aws_backup_vault_lock_configuration" "test" {
+#   backup_vault_name   = aws_backup_vault.example.name
+#   changeable_for_days = 3
+#   max_retention_days  = 7
+#   min_retention_days  = 1
+# }
