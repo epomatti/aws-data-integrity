@@ -4,25 +4,27 @@ Set of Data Integrity features provided by AWS services as a requirement for AWS
 
 The following services provide data integrity features:
 
-| Service | |
-
 - S3 Object Lock
 - S3 Glacier Vault Lock
 - AWS Backup Vault Lock
-- Legal Holds
 
+Additionally, Legal Hold is available for S3 and Backup Vault.
 
 ## S3 Object Lock
 
-- Set objects as **immutable** during a retention period.
-- Only for NEW buckets, while they are being created. Cannot apply this for existing buckets.
-- Automatically enables versioning.
-- New objects inherit bucket settings, if defined. However, possible to apply object-by-object settings.
+Key properties of this feature:
 
-Modes:
-- Governance - Authorization to change objects is granted via the `s3:BypassGovernanceRetention` actions.
-- Compliance - No one is allowed to change the object until the lock has expired. Not even the Root.
+- Objects are **immutable** during a retention period.
+- Can apply only for NEW buckets on creation. Not possible to apply this for existing buckets.
+- Requires and automatically enables versioning, and it is not possible to pause or disable it either.
+- New objects inherit default bucket settings, if defined. Retention period is applied on an object-by-object basis.
 
+There are two retention period modes:
+
+- **Governance** - Objects are immutable. However, authorization is granted via the `s3:BypassGovernanceRetention` action.
+- **Compliance** - No one is allowed to change the object until the lock has expired. Not even the AWS Account Root user.
+
+S3 Object Legal Hold prevents objects from being **deleted or overwritten** while active.
 
 ### Retention period type `GOVERNANCE`
 
@@ -86,6 +88,19 @@ aws s3api put-object-retention \
     --retention '{ }' \
     --bypass-governance-retention
 ```
+
+### Legal Hold ###
+
+Legal holds will prevent the objects from being **deleted or overwritten**:
+
+```sh
+aws s3api put-object-legal-hold \
+    --bucket bucketdataintegritysandbox789 \
+    --key "important.txt" \
+    --legal-hold Status=ON
+```
+
+Deleting this object version with Legal Hold is not permitted.
 
 ## S3 Glacier Vault Lock
 
