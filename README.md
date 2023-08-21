@@ -10,6 +10,15 @@ The following services provide data integrity features:
 
 Additionally, Legal Hold is available for S3 and Backup Vault.
 
+### Setup
+
+To create the baseline infrastructure, execute:
+
+```sh
+terraform init
+terraform apply
+```
+
 ## S3 Object Lock
 
 Key properties of this feature:
