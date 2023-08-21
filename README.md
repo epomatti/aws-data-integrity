@@ -121,6 +121,33 @@ When a lock is applied it stays for "In-progress" state for 24 hours. It is poss
 
 🚨 Vault lock policy cannot be modified or deleted after confirmation.
 
+As shown in the print bellow, Terraform will create the Glacier Vault along with the Vault Lock policy.
+
+> ℹ️ Created with `complete_lock = false` so it will automatically expire after 24h.
+
+<img src=".assets/glacier.png" />
+
+To test it, upload an archive:
+
+```sh
+aws glacier upload-archive --account-id ... --vault-name dataintegritysandboxglacier789 --body "artifacts/archive.txt"
+```
+
+Now try deleting the archive:
+
+```sh
+aws glacier delete-archive \
+    --account-id ...  \
+    --vault-name dataintegritysandboxglacier789 \
+    --archive-id ...
+```
+
+An `explicit deny` error should be returned.
+
+After deleting the vault lock policy, trying again should allow the operation to go through.
+
+Check the [documentation][1] for Glacier vault lock policies.
+
 ## AWS Backup Vault Lock
 
 - Prevents backups in the vault from being deleted until lock expiration.
@@ -140,3 +167,7 @@ Retention modes:
 Can be applied to:
 - S3 Object lock legal hold (requires S3 object lock to be enabled). Object-level setting.
 - AWS Backup legal hold (does not require vault lock). Prevents backups from being deleted for duration of lock. All or selected backups.
+
+
+
+[1]: https://docs.aws.amazon.com/amazonglacier/latest/dev/vault-lock-policy.html
